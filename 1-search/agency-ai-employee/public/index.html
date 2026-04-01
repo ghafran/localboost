@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Agency AI Employee</title>
+    <style>
+      :root {
+        --bg: #0b1020;
+        --panel: #121933;
+        --panel-2: #1b2548;
+        --text: #eef3ff;
+        --muted: #a6b2d8;
+        --border: #2b3766;
+        --accent: #8fb3ff;
+        --danger: #ff938f;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: Inter, Arial, sans-serif;
+        background: linear-gradient(180deg, #0b1020, #111831 45%, #0f1630);
+        color: var(--text);
+      }
+      .wrap {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 32px 20px 60px;
+      }
+      h1 { margin: 0 0 8px; font-size: 34px; }
+      p { color: var(--muted); }
+      .card {
+        background: rgba(18, 25, 51, 0.92);
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        padding: 18px;
+        box-shadow: 0 10px 28px rgba(0,0,0,0.28);
+      }
+      .row {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 12px;
+        align-items: end;
+      }
+      input, button {
+        width: 100%;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        padding: 14px 16px;
+        font-size: 16px;
+      }
+      input {
+        background: var(--panel-2);
+        color: var(--text);
+      }
+      button {
+        background: var(--accent);
+        color: #0b1020;
+        font-weight: 700;
+        cursor: pointer;
+        min-width: 160px;
+      }
+      button:disabled { opacity: 0.65; cursor: wait; }
+      .meta {
+        margin-top: 16px;
+        color: var(--muted);
+        font-size: 14px;
+      }
+      .error {
+        margin-top: 14px;
+        color: var(--danger);
+        font-weight: 600;
+      }
+      table {
+        width: 100%;
+        margin-top: 20px;
+        border-collapse: collapse;
+        overflow: hidden;
+        border-radius: 14px;
+      }
+      th, td {
+        text-align: left;
+        padding: 12px;
+        border-bottom: 1px solid var(--border);
+        vertical-align: top;
+      }
+      th {
+        color: var(--muted);
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      tr:hover td { background: rgba(255,255,255,0.02); }
+      .pill {
+        display: inline-block;
+        padding: 5px 10px;
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        font-size: 12px;
+        color: var(--muted);
+      }
+      .section-title {
+        margin-top: 26px;
+        margin-bottom: 10px;
+        font-size: 20px;
+      }
+      a { color: var(--accent); }
+      @media (max-width: 860px) {
+        .row { grid-template-columns: 1fr; }
+        table, thead, tbody, tr, th, td { display: block; }
+        thead { display: none; }
+        tr {
+          background: rgba(255,255,255,0.02);
+          border: 1px solid var(--border);
+          border-radius: 12px;
+          margin-bottom: 12px;
+          overflow: hidden;
+        }
+        td {
+          border-bottom: 1px solid var(--border);
+        }
+        td::before {
+          content: attr(data-label);
+          display: block;
+          font-size: 12px;
+          color: var(--muted);
+          margin-bottom: 6px;
+          text-transform: uppercase;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <h1>Agency AI Employee</h1>
+      <p>Lead Search Agent: enter a US ZIP code to find local businesses and AI-enriched lead data.</p>
+
+      <div class="card">
+        <div class="row">
+          <div>
+            <label for="zipCode">ZIP code</label>
+            <input id="zipCode" maxlength="5" placeholder="10001" />
+          </div>
+          <button id="searchBtn">Search Leads</button>
+        </div>
+        <div id="meta" class="meta"></div>
+        <div id="error" class="error"></div>
+      </div>
+
+      <div class="section-title">Results</div>
+      <div class="card">
+        <div id="results"></div>
+      </div>
+    </div>
+
+    <script>
+      const zipInput = document.getElementById('zipCode');
+      const searchBtn = document.getElementById('searchBtn');
+      const resultsEl = document.getElementById('results');
+      const metaEl = document.getElementById('meta');
+      const errorEl = document.getElementById('error');
+
+      function escapeHtml(value) {
+        return String(value ?? '')
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#039;');
+      }
+
+      function renderTable(leads) {
+        if (!Array.isArray(leads) || leads.length === 0) {
+          resultsEl.innerHTML = '<p>No leads found.</p>';
+          return;
+        }
+
+        const rows = leads.map((lead) => `
+          <tr>
+            <td data-label="Name">${escapeHtml(lead.name)}</td>
+            <td data-label="Phone">${escapeHtml(lead.phone || '—')}</td>
+            <td data-label="Address">${escapeHtml(lead.address || '—')}</td>
+            <td data-label="Category">${escapeHtml(lead.business_category || '—')}</td>
+            <td data-label="Size"><span class="pill">${escapeHtml(lead.business_size || 'unknown')}</span></td>
+            <td data-label="Revenue">${escapeHtml(lead.revenue_estimate || 'unknown')}</td>
+            <td data-label="Website">${lead.website ? `<a href="${escapeHtml(lead.website)}" target="_blank" rel="noreferrer">Open</a>` : '—'}</td>
+            <td data-label="Notes">${escapeHtml(lead.notes || '')}</td>
+          </tr>
+        `).join('');
+
+        resultsEl.innerHTML = `
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Phone</th>
+                <th>Address</th>
+                <th>Category</th>
+                <th>Size</th>
+                <th>Revenue</th>
+                <th>Website</th>
+                <th>Notes</th>
+              </tr>
+            </thead>
+            <tbody>${rows}</tbody>
+          </table>
+        `;
+      }
+
+      async function searchLeads() {
+        const zipCode = zipInput.value.trim();
+        errorEl.textContent = '';
+        metaEl.textContent = '';
+
+        if (!/^\d{5}$/.test(zipCode)) {
+          errorEl.textContent = 'Enter a valid 5-digit US ZIP code.';
+          return;
+        }
+
+        searchBtn.disabled = true;
+        searchBtn.textContent = 'Searching...';
+        resultsEl.innerHTML = '<p>Loading...</p>';
+
+        try {
+          const response = await fetch('/api/lead-search', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ zipCode })
+          });
+
+          const data = await response.json();
+          if (!response.ok) {
+            throw new Error(data.error || 'Search failed');
+          }
+
+          metaEl.textContent = `ZIP ${data.zipCode} · ${data.count} leads · source: ${data.source}`;
+          renderTable(data.leads);
+        } catch (error) {
+          resultsEl.innerHTML = '';
+          errorEl.textContent = error.message || 'Unknown error';
+        } finally {
+          searchBtn.disabled = false;
+          searchBtn.textContent = 'Search Leads';
+        }
+      }
+
+      searchBtn.addEventListener('click', searchLeads);
+      zipInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') searchLeads();
+      });
+    </script>
+  </body>
+</html>
