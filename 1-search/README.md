@@ -17,3 +17,4 @@ Output:
 List of local businesses with the zip code.
 Name, phone, address, business catetory, business size, revenue
 
+Allow paging to show more businesses
