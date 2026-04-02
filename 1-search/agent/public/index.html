@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Agency AI Employee</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header>
+        <h1>Agency AI Employee</h1>
+        <p>Lead Search Agent</p>
+      </header>
+
+      <section class="panel search-panel">
+        <div class="form-row">
+          <label for="zip">ZIP code</label>
+          <input id="zip" type="text" inputmode="numeric" maxlength="5" placeholder="10001" />
+        </div>
+        <div class="form-row">
+          <label for="pageSize">Results per page</label>
+          <select id="pageSize">
+            <option value="5">5</option>
+            <option value="10" selected>10</option>
+            <option value="20">20</option>
+            <option value="50">50</option>
+          </select>
+        </div>
+        <div class="actions">
+          <button id="searchBtn">Search</button>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="results-header">
+          <div>
+            <h2>Businesses</h2>
+            <p id="summary">Enter a ZIP code to begin.</p>
+          </div>
+          <div class="paging-controls top-paging">
+            <button id="prevBtn" disabled>Previous</button>
+            <span id="pageInfo">Page 0 of 0</span>
+            <button id="nextBtn" disabled>Next</button>
+          </div>
+        </div>
+
+        <div id="error" class="error hidden"></div>
+        <div id="loading" class="loading hidden">Loading…</div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Phone</th>
+                <th>Address</th>
+                <th>Category</th>
+                <th>Size</th>
+                <th>Revenue</th>
+              </tr>
+            </thead>
+            <tbody id="resultsBody"></tbody>
+          </table>
+        </div>
+
+        <div class="paging-controls bottom-paging">
+          <button id="prevBtnBottom" disabled>Previous</button>
+          <span id="pageInfoBottom">Page 0 of 0</span>
+          <button id="nextBtnBottom" disabled>Next</button>
+        </div>
+      </section>
+    </div>
+
+    <script src="/app.js"></script>
+  </body>
+</html>

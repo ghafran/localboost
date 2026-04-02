@@ -1,0 +1,18 @@
+{
+  "name": "agency-ai-employee",
+  "version": "1.0.0",
+  "description": "Node.js SPA for evaluating a company's online presence using OpenAI and optional third-party APIs.",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "openai": "^4.104.0",
+    "zod": "^3.23.8"
+  }
+}
